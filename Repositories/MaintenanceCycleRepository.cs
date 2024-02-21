@@ -1,4 +1,6 @@
 ﻿
+using AutoMapper;
+using HomeMaintenance.DTOs;
 using HomeMaintenance.Exceptions;
 using HomeMaintenance.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,18 +15,28 @@ namespace HomeMaintenance.Repositories
 
         private readonly EntityContext _Context;
 
-        public MaintenanceCycleRepository(EntityContext context)
+        private readonly IMapper _Mapper;
+
+        public MaintenanceCycleRepository(EntityContext context, IMapper mapper)
         {
             _Context = context;
+            _Mapper = mapper;
         }
 
-        public async Task<MaintenanceCycleTask> Add(MaintenanceCycleTask maintenanceCycle)
+        public async Task<MaintenanceCycleTaskDTO> Add(MaintenanceCycleTaskDTO maintenanceCycle)
         {
             try
             {
-                _Context.MaintenanceCycleTasks.Add(maintenanceCycle);
+                // convert to a model object
+                MaintenanceCycleTask newMaintenanceCycleModel = _Mapper.Map<MaintenanceCycleTask>(maintenanceCycle);
+
+                //make database change
+                _Context.MaintenanceCycleTasks.Add(newMaintenanceCycleModel);
                 await _Context.SaveChangesAsync();
-                return maintenanceCycle;
+
+                // convert back to a DTO
+                MaintenanceCycleTaskDTO newMaintenanceCycleTaskDTO = _Mapper.Map<MaintenanceCycleTaskDTO>(newMaintenanceCycleModel);
+                return newMaintenanceCycleTaskDTO;
             }
             catch (DbUpdateConcurrencyException ex) 
             {
@@ -32,20 +44,21 @@ namespace HomeMaintenance.Repositories
             }
         }
 
-        public async Task<MaintenanceCycleTask?> Get(long maintenanceCycleKey)
+        public async Task<MaintenanceCycleTaskDTO?> Get(long maintenanceCycleKey)
         {
-            return await _Context.MaintenanceCycleTasks
+            MaintenanceCycleTask task = await _Context.MaintenanceCycleTasks
                 .Where(t => t.Id == maintenanceCycleKey)
                 .SingleOrDefaultAsync();
+            return _Mapper.Map<MaintenanceCycleTaskDTO>(task);
         }
 
-        public async Task<List<MaintenanceCycleTask>> GetAll()
+        public async Task<List<MaintenanceCycleTaskDTO>> GetAll()
         {
             var maintenanceTasks = await _Context.MaintenanceCycleTasks.Include(task => task.TaskExecutionHistory).ToListAsync();
-            return maintenanceTasks;
+            return _Mapper.Map<List<MaintenanceCycleTask>, List<MaintenanceCycleTaskDTO>>(maintenanceTasks);
         }
 
-        public Task<MaintenanceCycleTask> Update(MaintenanceCycleTask maintenanceCycle)
+        public Task<MaintenanceCycleTaskDTO> Update(MaintenanceCycleTaskDTO maintenanceCycle)
         {
             throw new NotImplementedException();
         }

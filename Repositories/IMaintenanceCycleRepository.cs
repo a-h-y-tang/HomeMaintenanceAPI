@@ -1,4 +1,4 @@
-﻿using HomeMaintenance.Models;
+﻿using HomeMaintenance.DTOs;
 
 namespace HomeMaintenance.Repositories
 {
@@ -11,28 +11,28 @@ namespace HomeMaintenance.Repositories
         /// Get all records of the maintenance cycle
         /// </summary>
         /// <returns></returns>
-        public Task<List<MaintenanceCycleTask>> GetAll();
+        public Task<List<MaintenanceCycleTaskDTO>> GetAll();
 
         /// <summary>
         /// Retrieve a specific maintenance cycle task
         /// </summary>
         /// <param name="maintenanceCycleKey"></param>
         /// <returns></returns>
-        public Task<MaintenanceCycleTask?> Get(long maintenanceCycleKey);
+        public Task<MaintenanceCycleTaskDTO?> Get(long maintenanceCycleKey);
 
         /// <summary>
         /// Insert a new maintenance cycle task
         /// </summary>
         /// <param name="maintenanceCycle"></param>
         /// <returns></returns>
-        public Task<MaintenanceCycleTask> Add(MaintenanceCycleTask maintenanceCycle);
+        public Task<MaintenanceCycleTaskDTO> Add(MaintenanceCycleTaskDTO maintenanceCycle);
 
         /// <summary>
         /// Updates an existing maintenance cycle task
         /// </summary>
         /// <param name="maintenanceCycle"></param>
         /// <returns></returns>
-        public Task<MaintenanceCycleTask> Update(MaintenanceCycleTask maintenanceCycle);
+        public Task<MaintenanceCycleTaskDTO> Update(MaintenanceCycleTaskDTO maintenanceCycle);
 
         // Maintenance cycles shouldn't be deleted.  It would cascade and require removal from the task execution history.
     }

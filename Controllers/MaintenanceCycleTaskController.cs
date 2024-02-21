@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using HomeMaintenance.DTOs;
-using HomeMaintenance.Models;
 using HomeMaintenance.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using System;
+using System.Linq.Expressions;
 
 namespace HomeMaintenance.Controllers
 {
@@ -12,19 +13,19 @@ namespace HomeMaintenance.Controllers
     public class MaintenanceCycleTaskController : ODataController
     {
 
-        private readonly IMaintenanceCycleRepository _repository;
+        private readonly IMaintenanceCycleRepository _Repository;
 
-        private readonly IMapper _mapper;
+        private readonly IMapper _Mapper;
 
-        private readonly ILogger<MaintenanceCycleTaskController> _logger;
+        private readonly ILogger<MaintenanceCycleTaskController> _Logger;
 
         public MaintenanceCycleTaskController(IMaintenanceCycleRepository repository, 
             IMapper mapper,
             ILogger<MaintenanceCycleTaskController> logger)
         {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
+            _Repository = repository;
+            _Mapper = mapper;
+            _Logger = logger;
         }
 
         /// <summary>
@@ -33,10 +34,18 @@ namespace HomeMaintenance.Controllers
         /// </summary>
         /// <returns></returns>
         [EnableQuery]
-        public async Task<ActionResult<List<MaintenanceCycleTask>>> Get()
+        public async Task<ActionResult<List<MaintenanceCycleTaskDTO>>> Get()
         {
-            var tasks = await _repository.GetAll();
-            return Ok(tasks);
+            try
+            {
+                var tasks = await _Repository.GetAll();
+                return Ok(tasks);
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(ex, "Error getting all maintanence cycle tasks");
+                return StatusCode(500);
+            }
         }
 
         /// <summary>
@@ -45,17 +54,17 @@ namespace HomeMaintenance.Controllers
         /// <param name="key"></param>
         /// <returns></returns>
         [EnableQuery]
-        public async Task<ActionResult<MaintenanceCycleTask>> Get([FromRoute] long key)
+        public async Task<ActionResult<MaintenanceCycleTaskDTO>> Get([FromRoute] long key)
         {
             if (key < 0)
             {
-                _logger.LogError("Invalid id used to get maintenance cycle task");
+                _Logger.LogError("Invalid id used to get maintenance cycle task");
                 return BadRequest("Maintenance Cycle Tasks have positive numeric Id values");
             }
 
             try
             {
-                MaintenanceCycleTask? task = await _repository.Get(key);
+                MaintenanceCycleTaskDTO? task = await _Repository.Get(key);
                 if (task == null)
                 {
                     return NotFound();
@@ -64,26 +73,33 @@ namespace HomeMaintenance.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving individual maintenance cycle task");
+                _Logger.LogError(ex, "Error retrieving individual maintenance cycle task");
                 return StatusCode(500);
             }
         }
 
 
         /// <summary>
-        /// 
+        /// Create a maintenance cycle task
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MaintenanceCycleTaskDTO taskDTO)
+        public async Task<ActionResult> Post([FromBody] HomeMaintenance.DTOs.MaintenanceCycleTaskDTO taskDTO)
         {
-            if (taskDTO == null) return BadRequest();
+            if (taskDTO == null) return BadRequest();            
 
-            MaintenanceCycleTask task = _mapper.Map<MaintenanceCycleTask>(taskDTO);
+            try
+            {
+                var createdTask = await _Repository.Add(taskDTO);
 
-            var createdTask = await _repository.Add(task);
-            return Created(createdTask);
+                return Created(createdTask);
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(ex, "Error creating a new maintenance cycle task");
+                return StatusCode(500);
+            }
         }
     }
 }

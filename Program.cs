@@ -4,12 +4,13 @@ using Microsoft.OData.ModelBuilder;
 
 using HomeMaintenance.Models;
 using HomeMaintenance.Repositories;
+using HomeMaintenance.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntitySet<TaskExecutionHistory>("TaskExecutionHistory");
-modelBuilder.EntitySet<MaintenanceCycleTask>("MaintenanceCycleTask");
+modelBuilder.EntitySet<HomeMaintenance.DTOs.MaintenanceCycleTaskDTO>("MaintenanceCycleTask");
 
 // Add services to the container.
 
@@ -48,6 +49,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 // match incoming HTTP requests and dispatching them to endpoints
+app.UseODataRouteDebug();
 app.UseRouting();
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 

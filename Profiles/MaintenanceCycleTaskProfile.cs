@@ -8,8 +8,8 @@ namespace HomeMaintenance.Profiles
     {
         public MaintenanceCycleTaskProfile()
         {
-            // Default mapping as property names are the same
-            CreateMap<MaintenanceCycleTaskDTO, MaintenanceCycleTask>();            
+            // Bi-directional Default mapping as property names are the same
+            CreateMap<MaintenanceCycleTask, MaintenanceCycleTaskDTO>().ReverseMap();            
         }
     }
 }
