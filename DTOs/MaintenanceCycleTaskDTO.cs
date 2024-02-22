@@ -15,6 +15,6 @@ namespace HomeMaintenance.DTOs
 
         public int? WeekNumber { get; set; }
 
-        public IEnumerable<TaskExecutionHistory>? TaskExecutionHistory { get; set; }
+        public IEnumerable<TaskExecutionHistoryDTO>? TaskExecutionHistory { get; set; }
     }
 }

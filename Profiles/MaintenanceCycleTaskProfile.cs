@@ -9,7 +9,8 @@ namespace HomeMaintenance.Profiles
         public MaintenanceCycleTaskProfile()
         {
             // Bi-directional Default mapping as property names are the same
-            CreateMap<MaintenanceCycleTask, MaintenanceCycleTaskDTO>().ReverseMap();            
+            CreateMap<MaintenanceCycleTask, MaintenanceCycleTaskDTO>().ReverseMap();
+            CreateMap<TaskExecutionHistory, TaskExecutionHistoryDTO>().ReverseMap();
         }
     }
 }
