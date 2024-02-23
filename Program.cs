@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EntityContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
 });
 
 builder.Services.AddScoped<IMaintenanceCycleRepository, MaintenanceCycleRepository>();
