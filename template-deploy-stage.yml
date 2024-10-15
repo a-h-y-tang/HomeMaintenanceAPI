@@ -36,5 +36,5 @@ stages:
                   appType: 'webApp'
                   appName: ${{ parameters.appName }}       
                   package: '$(Pipeline.Workspace)/**/*.zip'
-                  appSettings: '-ConnectionStrings:DefaultConnection "$(ConnectionString)"'
+                  appSettings: '-ConnectionStrings:Database "$(ConnectionString)"'
                   deploymentMethod: 'auto' 
